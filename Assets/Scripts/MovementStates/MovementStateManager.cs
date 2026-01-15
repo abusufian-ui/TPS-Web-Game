@@ -22,7 +22,8 @@ public class MovementStateManager : MonoBehaviour
     
     Vector3 velocity;
     Vector3 spherePos;
-    CharacterController controller;
+
+    [HideInInspector] public CharacterController controller;
 
     MovementBaseState currentState;
 
@@ -33,7 +34,7 @@ public class MovementStateManager : MonoBehaviour
 
     void Start()
     {
-        anim = GetComponentInChildren<Animator>();
+        anim = GetComponent<Animator>();
         controller = GetComponent<CharacterController>();
         SwitchState(Idle);
     }
