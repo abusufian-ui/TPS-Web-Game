@@ -25,7 +25,7 @@ public class MovementStateManager : MonoBehaviour
 
     [HideInInspector] public CharacterController controller;
 
-    MovementBaseState currentState;
+    public MovementBaseState currentState;
 
     public IdleState Idle = new IdleState();
     public WalkState Walk = new WalkState();
