@@ -24,8 +24,20 @@ public class WeaponManager : MonoBehaviour
     WeaponAmmo ammo;
     ActionStateManager actionState;
 
+    WeaponRecoil recoil;
+
+    Light muzzleFlashLight;
+    
+    // FIX: Changed "ParticalSystem" to "ParticleSystem"
+    ParticleSystem muzzleFlashParticles;
+    
+    float lightIntensity;
+    [SerializeField] float lightReturnSpeed = 2;  
+
     void Start()
     {
+        recoil = GetComponent<WeaponRecoil>();
+        
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
         {
@@ -42,6 +54,17 @@ public class WeaponManager : MonoBehaviour
             ammo = GetComponentInParent<WeaponAmmo>();
         }
         
+        muzzleFlashLight = GetComponentInChildren<Light>();
+        
+        // Add safety check for light to prevent errors if you haven't added one yet
+        if (muzzleFlashLight != null)
+        {
+            lightIntensity = muzzleFlashLight.intensity;
+            muzzleFlashLight.intensity = 0;
+        }
+
+        muzzleFlashParticles = GetComponentInChildren<ParticleSystem>();
+        
         if (ammo == null)
         {
             Debug.LogError("WeaponAmmo component missing! Please attach WeaponAmmo script to: " + gameObject.name);
@@ -52,8 +75,11 @@ public class WeaponManager : MonoBehaviour
     {
         if (ShouldFire()) Fire();
         
-        // FIX: I commented this out to stop the 999+ console spam
-        // if (ammo != null) Debug.Log("Current Ammo: " + ammo.currentAmmo); 
+        // Only modify light if it exists
+        if (muzzleFlashLight != null)
+        {
+            muzzleFlashLight.intensity = Mathf.Lerp(muzzleFlashLight.intensity, 0, lightReturnSpeed * Time.deltaTime);
+        }
     }
 
     bool ShouldFire()
@@ -65,7 +91,6 @@ public class WeaponManager : MonoBehaviour
         if (ammo == null) return false; 
         if (ammo.currentAmmo <= 0) return false;
         
-        // This checks if we are currently reloading to prevent shooting
         if (actionState != null && actionState.currentState == actionState.Reload) return false;
 
         if (semiAuto && Input.GetKeyDown(KeyCode.Mouse0)) return true;
@@ -84,6 +109,10 @@ public class WeaponManager : MonoBehaviour
             audioSource.PlayOneShot(gunShot);
         }
         
+        // Add check for recoil script presence
+        if (recoil != null) recoil.TriggerRecoil();
+        TriggerMuzzleFlash();      
+        
         if (ammo != null) ammo.currentAmmo--;
 
         for (int i = 0; i < bulletsPerShot; i++)
@@ -92,5 +121,11 @@ public class WeaponManager : MonoBehaviour
             Rigidbody rb = currentBullet.GetComponent<Rigidbody>();
             rb.AddForce(barrelPos.forward * bulletVelocity, ForceMode.Impulse);
         }
+    }
+
+    void TriggerMuzzleFlash()
+    {
+        if (muzzleFlashParticles != null) muzzleFlashParticles.Play();
+        if (muzzleFlashLight != null) muzzleFlashLight.intensity = lightIntensity; 
     }
 }
