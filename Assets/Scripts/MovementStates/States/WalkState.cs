@@ -7,20 +7,27 @@ public class WalkState : MovementBaseState
     public override void EnterState(MovementStateManager movement)
     {
         movement.anim.SetBool("Walking", true);
+
     }
     public override void UpdateState(MovementStateManager movement)
     {
-        if(Input.GetKey(KeyCode.LeftShift)) ExitState(movement, movement.Run);
-        else if(Input.GetKeyDown(KeyCode.C)) ExitState(movement, movement.Crouch);
-        else if(movement.dir.magnitude<0.1f) ExitState(movement, movement.Idle);
+        if (Input.GetKey(KeyCode.LeftShift)) ExitState(movement, movement.Run);
+        else if (Input.GetKeyDown(KeyCode.C)) ExitState(movement, movement.Crouch);
+        else if (movement.dir.magnitude < 0.1f) ExitState(movement, movement.Idle);
 
-        if(movement.vInput<0) movement.currentMoveSpeed = movement.WalkBackSpeed;
+        if (movement.vInput < 0) movement.currentMoveSpeed = movement.WalkBackSpeed;
         else movement.currentMoveSpeed = movement.WalkSpeed;
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            movement.prevousState = this;// Track previous state
+            ExitState(movement, movement.Jump);
+
+        }
     }
 
     void ExitState(MovementStateManager movement, MovementBaseState state)
     {
-        movement.anim.SetBool("Walking",false);
+        movement.anim.SetBool("Walking", false);
         movement.SwitchState(state);
     }
 }

@@ -8,7 +8,7 @@ public class MovementStateManager : MonoBehaviour
     public float WalkSpeed = 3, WalkBackSpeed = 2;
     public float RunSpeed = 7, RunBackSpeed = 5;
     public float CrouchSpeed = 2, CrouchBackSpeed = 1;
-    
+
     [HideInInspector] public float moveSpeed; // Unused now, safe to ignore
     [HideInInspector] public float currentMoveSpeed;
     [HideInInspector] public Vector3 dir;
@@ -19,18 +19,25 @@ public class MovementStateManager : MonoBehaviour
     [SerializeField] float groundYOffset = 0.2f;
     [SerializeField] LayerMask groundMask;
     [SerializeField] float gravity = -9.81f;
-    
+    [SerializeField] float jumpForce = 10f;
+
     Vector3 velocity;
     Vector3 spherePos;
 
     [HideInInspector] public CharacterController controller;
 
     public MovementBaseState currentState;
+    public MovementBaseState prevousState; // to track from which state we came
 
     public IdleState Idle = new IdleState();
     public WalkState Walk = new WalkState();
     public CrouchState Crouch = new CrouchState();
+    public JumpStates Jump = new JumpStates();
     public RunState Run = new RunState();
+
+    bool jumped = false;
+
+    // public MovementBaseState currentState;
 
     void Start()
     {
@@ -82,11 +89,13 @@ public class MovementStateManager : MonoBehaviour
 
         controller.Move(velocity * Time.deltaTime);
     }
-    
+
     void OnDrawGizmos()
     {
         if (controller == null) return;
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(new Vector3(transform.position.x, transform.position.y - groundYOffset, transform.position.z), controller.radius - 0.05f);
     }
+    public void JumpForce() => velocity.y += jumpForce;
+    public void Jumped() => jumped = true;
 }
