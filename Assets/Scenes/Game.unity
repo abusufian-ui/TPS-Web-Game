@@ -842,6 +842,7 @@ GameObject:
   - component: {fileID: 713086537}
   - component: {fileID: 715510954}
   - component: {fileID: 715510956}
+  - component: {fileID: 715510958}
   m_Layer: 0
   m_Name: AK74
   m_TagString: Untagged
@@ -1067,6 +1068,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 715510953}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &715510958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 715278473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 104caa46abd7a0d48aaa606f93f26b54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clipSize: 30
+  extraAmmo: 120
+  currentAmmo: 30
+  reloadSound: {fileID: 8300000, guid: 006828fd33c439a42937da10b1df3635, type: 3}
 --- !u!4 &715510959
 Transform:
   m_ObjectHideFlags: 0
@@ -1186,6 +1203,7 @@ GameObject:
   - component: {fileID: 899978343}
   - component: {fileID: 899978344}
   - component: {fileID: 899978345}
+  - component: {fileID: 899978346}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -1353,6 +1371,23 @@ MonoBehaviour:
   - m_Rig: {fileID: 681055087}
     m_Active: 1
   m_Effectors: []
+--- !u!114 &899978346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 899978336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5826254bba1e774ea65f8a44ce42876, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentWeapon: {fileID: 715278473}
+  ammo: {fileID: 0}
+  anim: {fileID: 0}
+  rHandAim: {fileID: 1304120860}
+  lHandIK: {fileID: 1210045610}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
