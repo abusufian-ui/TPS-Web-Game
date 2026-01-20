@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MovementStateManager : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class MovementStateManager : MonoBehaviour
     public float WalkSpeed = 3, WalkBackSpeed = 2;
     public float RunSpeed = 7, RunBackSpeed = 5;
     public float CrouchSpeed = 2, CrouchBackSpeed = 1;
+    float health = 100f;
+    float damageAmount = 10f;
 
     [HideInInspector] public float moveSpeed; // Unused now, safe to ignore
     [HideInInspector] public float currentMoveSpeed;
@@ -37,10 +40,17 @@ public class MovementStateManager : MonoBehaviour
 
     bool jumped = false;
 
+    public TMPro.TextMeshProUGUI health_display;
+
     // public MovementBaseState currentState;
 
     void Start()
     {
+        // Locks the cursor to the center of the screen
+        Cursor.lockState = CursorLockMode.Locked;
+
+        // Makes the cursor invisible
+        Cursor.visible = false;
         anim = GetComponent<Animator>();
         controller = GetComponent<CharacterController>();
         SwitchState(Idle);
@@ -48,6 +58,21 @@ public class MovementStateManager : MonoBehaviour
 
     void Update()
     {
+        display_health();
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            // Check if it's currently locked
+            if (Cursor.lockState == CursorLockMode.Locked)
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+            else
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
+        }
         GetDirectionAndMove();
         Gravity();
 
@@ -98,4 +123,74 @@ public class MovementStateManager : MonoBehaviour
     }
     public void JumpForce() => velocity.y += jumpForce;
     public void Jumped() => jumped = true;
+
+    // void OnCollisionEnter(Collision collision)
+    // {
+    //     if (collision.gameObject.CompareTag("Enemy"))
+    //     {
+    //         Debug.Log("Collided with Enemy");
+    //         health -= damageAmount;
+    //         if (health <= 0)
+    //         {
+    //             Die();
+    //         }
+    //     }
+    // }
+
+    void Die()
+    {
+        SceneManager.LoadScene("GameOver");
+    }
+
+    void display_health()
+    {
+        health_display.text = "Health: " + health.ToString();
+    }
+
+    // Replace OnCollisionEnter2D with this:
+    // private void OnControllerColliderHit(ControllerColliderHit hit)
+    // {
+    //     if (hit.gameObject.CompareTag("Enemy"))
+    //     {
+    //         // To prevent losing health every single frame the enemy touches you, 
+    //         // we check if the enemy is currently in an attacking state.
+    //         EnemyAi enemy = hit.gameObject.GetComponent<EnemyAi>();
+
+    //         if (enemy != null)
+    //         {
+    //             Debug.Log("Player hit by Enemy!");
+    //             TakeDamage(10f); // Create a helper function for damage
+    //         }
+    //     }
+    // }
+
+    // public void TakeDamage(float amount)
+    // {
+    //     health -= amount;
+    //     if (health <= 0)
+    //     {
+    //         Die();
+    //     }
+    // }
+
+    private void OnTriggerEnter(Collider other)
+{
+    // Check if the thing hitting us is the enemy's hand (which has the Enemy tag)
+    if (other.CompareTag("Enemy"))
+    {
+        // We check 'alreadyAttacked' logic to ensure we don't take damage 
+        // 60 times per second while the hand is overlapping the player.
+        TakeDamage(damageAmount);
+        Debug.Log("Player Punched! Health: " + health);
+    }
+}
+
+void TakeDamage(float amount)
+{
+    health -= amount;
+    if (health <= 0)
+    {
+        Die();
+    }
+}
 }
